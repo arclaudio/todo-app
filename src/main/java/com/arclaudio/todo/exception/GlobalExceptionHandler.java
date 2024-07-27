@@ -20,8 +20,7 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
-                webRequest.getDescription(false),
-                "RESOURCE_NOT_FOUND"
+                webRequest.getDescription(false)
         );
 
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
@@ -34,8 +33,7 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
-                webRequest.getDescription(false),
-                "INTERNAL_SERVER_ERROR"
+                webRequest.getDescription(false)
         );
 
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,10 +46,24 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
-                webRequest.getDescription(false),
-                "FORBIDDEN"
+                webRequest.getDescription(false)
         );
 
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(TodoAPIException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDetails> handleTodoApiException(TodoAPIException exception,
+                                                               WebRequest webRequest){
+
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false)
+        );
+
+        return new ResponseEntity<>(errorDetails, exception.getHttpStatus());
+
     }
 }
