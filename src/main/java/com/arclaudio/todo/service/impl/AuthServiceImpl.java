@@ -7,6 +7,7 @@ import com.arclaudio.todo.entity.User;
 import com.arclaudio.todo.exception.TodoAPIException;
 import com.arclaudio.todo.repository.RoleRepository;
 import com.arclaudio.todo.repository.UserRepository;
+import com.arclaudio.todo.security.JwtTokenProvider;
 import com.arclaudio.todo.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Override
     public String register(RegisterDTO registerDTO) {
@@ -66,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         ));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
-        return "User logged in successfully!";
+
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

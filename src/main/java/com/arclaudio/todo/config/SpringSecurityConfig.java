@@ -1,5 +1,7 @@
 package com.arclaudio.todo.config;
 
+import com.arclaudio.todo.security.JwtAuthenticationEntryPoint;
+import com.arclaudio.todo.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -24,6 +27,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SpringSecurityConfig {
 
     private UserDetailsService userDetailsService;
+
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
+
+    private JwtAuthenticationFilter authenticationFilter;
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
@@ -46,6 +53,11 @@ public class SpringSecurityConfig {
                     authorize.anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
 
+        http.exceptionHandling(exception ->
+                exception.authenticationEntryPoint(authenticationEntryPoint));
+
+        // Execute the JWT Authentication Filter before the Spring Security Filter
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
